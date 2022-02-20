@@ -3,39 +3,12 @@ import produce from 'immer';
 import faker from '@faker-js/faker';
 
 export const initialState = {
-  mainPosts: [{
-    id: 1,
-    User: {
-      id: 1,
-      nickname: '제로초',
-    },
-    content: '첫 번 째 게시글 #해시태그 #익스프레스',
-    Images: [{
-      id: shortId.generate(),
-      src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Jordan_Peterson_by_Gage_Skidmore.jpg/1200px-Jordan_Peterson_by_Gage_Skidmore.jpg',
-    }, {
-      id: shortId.generate(),
-      src: 'https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/20/827ca1e8-bcb7-4e6a-8bc5-d6d0b22353f3.jpg',
-    }, {
-      src: 'https://w.namu.la/s/f1defec95368865357b4ee0119fbadb028d87af3dc5acf7c5b32aea7275d7d7bbb8ece37fe86d0afc5f8cd8d4dffe340a098267dfd611e078067dbc47bb104930a9181d62e4e10019f63991ae167198bfb83dcad4a8d9967f256988d6ac6c72b',
-    }],
-    Comments: [{
-      id: shortId.generate(),
-      User: {
-        id: shortId.generate(),
-        nickname: 'nero',
-      },
-      content: '우와 첫 댓글~~',
-    }, {
-      id: shortId.generate(),
-      User: {
-        id: shortId.generate(),
-        nickname: 'corntea',
-      },
-      content: '2빠~~',
-    }],
-  }],
+  mainPosts: [],
   imagePaths: [],
+  hasMorePosts: true,
+  loadPostsLoading: false,
+  loadPostsDone: false,
+  loadPostsError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -47,26 +20,65 @@ export const initialState = {
   addCommentError: null,
 };
 
-initialState.mainPosts = initialState.mainPosts.concat(
-  Array(20).fill().map(() => ({
+const fff = () => ({
+  id: 1,
+  User: {
+    id: 1,
+    nickname: '제로초',
+  },
+  content: '첫 번 째 게시글 #해시태그 #익스프레스',
+  Images: [{
     id: shortId.generate(),
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Jordan_Peterson_by_Gage_Skidmore.jpg/1200px-Jordan_Peterson_by_Gage_Skidmore.jpg',
+  }, {
+    id: shortId.generate(),
+    src: 'https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/20/827ca1e8-bcb7-4e6a-8bc5-d6d0b22353f3.jpg',
+  }, {
+    src: 'https://w.namu.la/s/f1defec95368865357b4ee0119fbadb028d87af3dc5acf7c5b32aea7275d7d7bbb8ece37fe86d0afc5f8cd8d4dffe340a098267dfd611e078067dbc47bb104930a9181d62e4e10019f63991ae167198bfb83dcad4a8d9967f256988d6ac6c72b',
+  }],
+  Comments: [{
+    id: shortId.generate(),
+    User: {
+      id: shortId.generate(),
+      nickname: 'nero',
+    },
+    content: '우와 첫 댓글~~',
+  }, {
+    id: shortId.generate(),
+    User: {
+      id: shortId.generate(),
+      nickname: 'corntea',
+    },
+    content: '2빠~~',
+  }],
+});
+
+export const generateDummyPost = (number) => Array(number).fill().map(() => ({
+  id: shortId.generate(),
+  User: {
+    id: shortId.generate(),
+    nickname: faker.name.findName(),
+  },
+  content: faker.lorem.paragraph(),
+  Images: [{
+    src: faker.image.image(),
+  }],
+  Comments: [{
     User: {
       id: shortId.generate(),
       nickname: faker.name.findName(),
     },
-    content: faker.lorem.paragraph(),
-    Images: [{
-      src: faker.image.image(),
-    }],
-    Comments: [{
-      User: {
-        id: shortId.generate(),
-        nickname: faker.name.findName(),
-      },
-      content: faker.lorem.sentence(),
-    }],
-  })),
-);
+    content: faker.lorem.sentence(),
+  }],
+}));
+
+// initialState.mainPosts = initialState.mainPosts.concat(
+//   generateDummyPost(10)
+// );
+
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -111,6 +123,23 @@ const dummyComment = (data) => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
+    case LOAD_POSTS_REQUEST:
+      draft.loadPostsLoading = true;
+      draft.loadPostsDone = false;
+      draft.loadPostsError = null;
+      break;
+    case LOAD_POSTS_SUCCESS:
+      draft.loadPostsDone = true;
+      draft.loadPostsLoading = false;
+      draft.mainPosts = action.data.concat(draft.mainPosts);
+      console.log('mainPosts.length', draft.mainPosts.length);
+      console.log('mainPosts.length', draft.mainPosts.length < 50);
+      draft.hasMorePosts = draft.mainPosts.length < 50;
+      break;
+    case LOAD_POSTS_FAILURE:
+      draft.loadPostsLoading = false;
+      draft.loadPostsError = action.error;
+      break;
     case ADD_POST_REQUEST:
       draft.addPostLoading = true;
       draft.addPostDone = false;
