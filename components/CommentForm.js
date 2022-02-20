@@ -18,7 +18,6 @@ function CommentForm({ post }) {
   }, [addCommentDone]);
 
   const onSubmitComment = useCallback(() => {
-    console.log(post.id, commentText);
     dispatch(addCommentRequest({ content: commentText, postId: post.id, userId: id }));
   }, [commentText, id]);
   return (
@@ -29,6 +28,7 @@ function CommentForm({ post }) {
           style={{ position: 'absolute', right: 0, bottom: -40, zIndex: 1 }}
           type="primary"
           htmlType="submit"
+          loading={addCommentLoading}
         >삐약
         </Button>
       </Form.Item>

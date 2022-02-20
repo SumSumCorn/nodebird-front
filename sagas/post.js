@@ -4,14 +4,11 @@ import {
 import axios from 'axios';
 import shortId from 'shortid';
 import {
-  ADD_COMMENT_FAILURE,
-  ADD_COMMENT_REQUEST,
-  ADD_COMMENT_SUCCESS,
-  ADD_POST_FAILURE,
-  ADD_POST_REQUEST,
-  ADD_POST_SUCCESS,
+  ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS,
+  ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS,
+  REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS,
 } from '../reducer/post';
-import { ADD_POST_TO_ME } from '../reducer/user';
+import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducer/user';
 
 function addPostAPI(data) {
   return axios.post(`/api/${data.post.id}/post`, data);
@@ -19,6 +16,10 @@ function addPostAPI(data) {
 
 function addCommentAPI(data) {
   return axios.post(`/api/${data.post.id}/comment`, data);
+}
+
+function removePostAPI(data) {
+  return axios.delete('/api/post', data);
 }
 
 function* addPost(action) {
@@ -45,6 +46,26 @@ function* addPost(action) {
   }
 }
 
+function* removePost(action) {
+  try {
+    // const result = yield call(addPostAPI, action.data);
+    yield delay(1000);
+    yield put({
+      type: REMOVE_POST_SUCCESS,
+      data: action.data,
+    });
+    yield put({
+      type: REMOVE_POST_OF_ME,
+      data: action.data,
+    });
+  } catch (e) {
+    yield put({
+      type: REMOVE_POST_FAILURE,
+      error: e.response.data,
+    });
+  }
+}
+
 function* addComment(action) {
   try {
     // const result = yield call(addCommentAPI, action.data);
@@ -64,6 +85,11 @@ function* addComment(action) {
 function* watchPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
+
+function* watchRemovePost() {
+  yield takeLatest(REMOVE_POST_REQUEST, removePost);
+}
+
 function* watchComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
@@ -71,6 +97,7 @@ function* watchComment() {
 export default function* postSaga() {
   yield all([
     fork(watchPost),
+    fork(watchRemovePost),
     fork(watchComment),
   ]);
 }
