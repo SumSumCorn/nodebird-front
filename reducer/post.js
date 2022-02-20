@@ -1,4 +1,6 @@
 import shortId from 'shortid';
+import produce from 'immer';
+import faker from '@faker-js/faker';
 
 export const initialState = {
   mainPosts: [{
@@ -14,6 +16,8 @@ export const initialState = {
     }, {
       id: shortId.generate(),
       src: 'https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/20/827ca1e8-bcb7-4e6a-8bc5-d6d0b22353f3.jpg',
+    }, {
+      src: 'https://w.namu.la/s/f1defec95368865357b4ee0119fbadb028d87af3dc5acf7c5b32aea7275d7d7bbb8ece37fe86d0afc5f8cd8d4dffe340a098267dfd611e078067dbc47bb104930a9181d62e4e10019f63991ae167198bfb83dcad4a8d9967f256988d6ac6c72b',
     }],
     Comments: [{
       id: shortId.generate(),
@@ -42,9 +46,28 @@ export const initialState = {
   addCommentDone: false,
   addCommentError: null,
 };
-// ,{
-// src: 'https://w.namu.la/s/f1defec95368865357b4ee0119fbadb028d87af3dc5acf7c5b32aea7275d7d7bbb8ece37fe86d0afc5f8cd8d4dffe340a098267dfd611e078067dbc47bb104930a9181d62e4e10019f63991ae167198bfb83dcad4a8d9967f256988d6ac6c72b'
-// }
+
+initialState.mainPosts = initialState.mainPosts.concat(
+  Array(20).fill().map(() => ({
+    id: shortId.generate(),
+    User: {
+      id: shortId.generate(),
+      nickname: faker.name.findName(),
+    },
+    content: faker.lorem.paragraph(),
+    Images: [{
+      src: faker.image.image(),
+    }],
+    Comments: [{
+      User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
+      },
+      content: faker.lorem.sentence(),
+    }],
+  })),
+);
+
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
@@ -86,77 +109,55 @@ const dummyComment = (data) => ({
   },
 });
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
     case ADD_POST_REQUEST:
-      return {
-        ...state,
-        addPostLoading: true,
-        addPostDone: false,
-        addPostError: null,
-      };
+      draft.addPostLoading = true;
+      draft.addPostDone = false;
+      draft.addPostError = null;
+      break;
     case ADD_POST_SUCCESS:
-      return {
-        ...state,
-        mainPosts: [dummyPost(action.data), ...state.mainPosts],
-        addPostDone: true,
-        addPostLoading: false,
-      };
+      draft.mainPosts.unshift(dummyPost(action.data));
+      draft.addPostDone = true;
+      draft.addPostLoading = false;
+      break;
     case ADD_POST_FAILURE:
-      return {
-        ...state,
-        addPostLoading: false,
-        addPostError: action.error,
-      };
+      draft.addPostLoading = false;
+      draft.addPostError = action.error;
+      break;
     case REMOVE_POST_REQUEST:
-      return {
-        ...state,
-        removePostLoading: true,
-        removePostDone: false,
-        removePostError: null,
-      };
+      draft.removePostLoading = true;
+      draft.removePostDone = false;
+      draft.removePostError = null;
+      break;
     case REMOVE_POST_SUCCESS:
-      return {
-        ...state,
-        mainPosts: state.mainPosts.filter((post) => post.id !== action.data),
-        removePostDone: true,
-        removePostLoading: false,
-      };
+      draft.mainPosts = state.mainPosts.filter((post) => post.id !== action.data);
+      draft.removePostDone = true;
+      draft.removePostLoading = false;
+      break;
     case REMOVE_POST_FAILURE:
-      return {
-        ...state,
-        removePostLoading: false,
-        removePostError: action.error,
-      };
+      draft.removePostLoading = false;
+      draft.removePostError = action.error;
+      break;
     case ADD_COMMENT_REQUEST:
-      return {
-        ...state,
-        addCommentLoading: true,
-        addCommentDone: false,
-        addCommentError: null,
-      };
+      draft.addCommentLoading = true;
+      draft.addCommentDone = false;
+      draft.addCommentError = null;
+      break;
     case ADD_COMMENT_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex((y) => y.id === action.data.postId);
-      const post = state.mainPosts[postIndex];
-      post.Comments = [dummyComment(action.data), ...post.Comments];
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = post;
-      return {
-        ...state,
-        mainPosts,
-        addCommentDone: true,
-        addCommentLoading: false,
-      };
+      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+      post.Comments.unshift(dummyComment(action.data));
+      draft.addCommentDone = true;
+      draft.addCommentLoading = false;
+      break;
     }
     case ADD_COMMENT_FAILURE:
-      return {
-        ...state,
-        addCommentLoading: false,
-        addCommentError: action.error,
-      };
+      draft.addCommentLoading = false;
+      draft.addCommentError = action.error;
+      break;
     default:
-      return state;
+      break;
   }
-};
+});
 
 export default reducer;

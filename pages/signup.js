@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import styled from 'styled-components';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AppLayout from '../components/AppLayout';
 import useInput from '../hooks/useInput';
 import { SIGN_UP_REQUEST } from '../reducer/user';
@@ -16,7 +16,7 @@ const ErrorMessage = styled.div`
 
 function Signup() {
   const dispatch = useDispatch();
-  const { signUpLoading } = useState((state) => state.user);
+  const { signUpLoading } = useSelector((state) => state.user);
 
   const [email, onChangeEmail] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
