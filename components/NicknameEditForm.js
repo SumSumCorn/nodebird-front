@@ -8,9 +8,8 @@ function NicknameEditForm() {
     padding: '20px',
   }), []);
   return (
-    <Form>
-      <label />
-      <Input.Search style={style} addonBefore="닉네임" enterButton="수정" />
+    <Form style={style}>
+      <Input.Search addonBefore="닉네임" enterButton="수정" />
     </Form>
   );
 }

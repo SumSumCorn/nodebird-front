@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import propTypes from 'prop-types';
 import {
-  Avatar, Button, Card, Comment, Image, List, Popover,
+  Avatar, Button, Card, Comment, List, Popover,
 } from 'antd';
 import {
   EllipsisOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, RetweetOutlined,
@@ -40,12 +39,11 @@ function PostCard({ post }) {
                 {id && post.User.id === id ? (
                   <>
                     <Button type="primary">수정</Button>
-                    }
                     <Button type="danger">삭제</Button>
                   </>
                 ) : <Button>신고</Button>}
               </Button.Group>
-                    )}
+            )}
           >
             <EllipsisOutlined />
           </Popover>,
@@ -57,25 +55,23 @@ function PostCard({ post }) {
           description={<PostCardContent postData={post.content} />}
         />
       </Card>
-      07ㅕㅓㅏ
       {commentFormOpened && (
-      <div>
-        <CommentForm post={post} />
-        <List
-          header={`${post.Comments.length}개의 댓글`}
-          itemLayout="horizontal"
-          dataSource={post.Comments}
-          renderItem={(item) => (
-            <li>
-              8q  a-=
-              <Comment
-                author={item.User.nickname}
-                content={item.content}
-              />
-            </li>
-          )}
-        />
-      </div>
+        <div>
+          <CommentForm post={post} />
+          <List
+            header={`${post.Comments.length}개의 댓글`}
+            itemLayout="horizontal"
+            dataSource={post.Comments}
+            renderItem={(item) => (
+              <li>
+                <Comment
+                  author={item.User.nickname}
+                  content={item.content}
+                />
+              </li>
+            )}
+          />
+        </div>
       )}
       {/* <Comments /> */}
     </div>
@@ -84,7 +80,7 @@ function PostCard({ post }) {
 
 PostCard.propTypes = {
   post: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     User: PropTypes.object,
     content: PropTypes.string,
     createdAt: PropTypes.object,

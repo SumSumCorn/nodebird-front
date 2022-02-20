@@ -1,3 +1,5 @@
+import shortId from 'shortid';
+
 export const initialState = {
   mainPosts: [{
     id: 1,
@@ -7,17 +9,23 @@ export const initialState = {
     },
     content: '첫 번 째 게시글 #해시태그 #익스프레스',
     Images: [{
+      id: shortId.generate(),
       src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Jordan_Peterson_by_Gage_Skidmore.jpg/1200px-Jordan_Peterson_by_Gage_Skidmore.jpg',
     }, {
+      id: shortId.generate(),
       src: 'https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/20/827ca1e8-bcb7-4e6a-8bc5-d6d0b22353f3.jpg',
     }],
     Comments: [{
+      id: shortId.generate(),
       User: {
+        id: shortId.generate(),
         nickname: 'nero',
       },
       content: '우와 첫 댓글~~',
     }, {
+      id: shortId.generate(),
       User: {
+        id: shortId.generate(),
         nickname: 'corntea',
       },
       content: '2빠~~',
@@ -27,6 +35,9 @@ export const initialState = {
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
+  addCommentLoading: false,
+  addCommentDone: false,
+  addCommentError: null,
 };
 // ,{
 // src: 'https://w.namu.la/s/f1defec95368865357b4ee0119fbadb028d87af3dc5acf7c5b32aea7275d7d7bbb8ece37fe86d0afc5f8cd8d4dffe340a098267dfd611e078067dbc47bb104930a9181d62e4e10019f63991ae167198bfb83dcad4a8d9967f256988d6ac6c72b'
@@ -48,16 +59,25 @@ export const addCommentRequest = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
-const dummyPost = {
-  id: 2,
-  content: '더미 데이터 입니다.',
+const dummyPost = (data) => ({
+  id: shortId.generate(),
+  content: data,
   User: {
     id: 1,
     nickname: '제로초',
   },
   Images: [],
   Comments: [],
-};
+});
+
+const dummyComment = (data) => ({
+  id: data.id,
+  content: data.content,
+  User: {
+    id: 1,
+    nickname: '제로초',
+  },
+});
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -71,7 +91,7 @@ const reducer = (state = initialState, action) => {
     case ADD_POST_SUCCESS:
       return {
         ...state,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [dummyPost(action.data.content), ...state.mainPosts],
         addPostDone: true,
         addPostLoading: false,
       };
@@ -88,12 +108,19 @@ const reducer = (state = initialState, action) => {
         addCommentDone: false,
         addCommentError: null,
       };
-    case ADD_COMMENT_SUCCESS:
+    case ADD_COMMENT_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex((y) => y.id === action.data.postId);
+      const post = state.mainPosts[postIndex];
+      post.Comments = [dummyComment(action.data), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
       return {
         ...state,
+        mainPosts,
         addCommentDone: true,
         addCommentLoading: false,
       };
+    }
     case ADD_COMMENT_FAILURE:
       return {
         ...state,
