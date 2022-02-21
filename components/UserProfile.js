@@ -32,8 +32,8 @@ function UserProfile() {
       ]}
     >
       <Card.Meta
-        avatar={<Avatar>ZC</Avatar>}
-        title="ZeroCho"
+        avatar={<Avatar>{me.nickname.substring(0, 2)}</Avatar>}
+        title={me.nickname}
       />
       <Button onClick={onLogout} loading={logOutLoading}>로그아웃</Button>
     </Card>

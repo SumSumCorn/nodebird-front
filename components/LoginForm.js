@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { Button, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,9 +7,15 @@ import { loginRequestAction } from '../reducer/user';
 
 function LoginForm() {
   const dispatch = useDispatch();
-  const { logInLoading } = useSelector((state) => state.user);
+  const { logInLoading, logInError } = useSelector((state) => state.user);
   const [email, onChangeEmail] = useinput('');
   const [password, onChangePassword] = useinput('');
+
+  useEffect(() => {
+    if (logInError) {
+      alert(logInError);
+    }
+  }, [logInError]);
 
   const onSubmitForm = useCallback(() => {
     // console.log(email,password);

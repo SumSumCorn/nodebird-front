@@ -69,7 +69,7 @@ function logOutAPI() {
 }
 function* logOut() {
   try {
-    // const result = yield call(logOutAPI);
+    yield call(logOutAPI);
     yield put({
       type: LOG_OUT_SUCCESS,
     });
@@ -89,7 +89,7 @@ function* signUp(action) {
     const result = yield call(signUpAPI, action.data);
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (e) {
     yield put({
