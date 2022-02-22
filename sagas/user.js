@@ -14,6 +14,7 @@ import {
   SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS,
 } from '../reducer/user';
 
+
 function loadMyInfoAPI() {
   return axios.get('/user');
 }
@@ -117,6 +118,8 @@ function* signUp(action) {
   }
 }
 
+
+
 function* watchLoadMyInfo() {
   yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
@@ -141,7 +144,8 @@ function* watchSignUp() {
 
 export default function* userSaga() {
   yield all([
-    fork(watchLoadMyInfo, loadMyInfo),
+
+    fork(watchLoadMyInfo),
     fork(watchFollow),
     fork(watchUnfollow),
     fork(watchLogIn),
