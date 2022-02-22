@@ -132,8 +132,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.loadPostsDone = true;
       draft.loadPostsLoading = false;
       draft.mainPosts = action.data.concat(draft.mainPosts);
-      console.log('mainPosts.length', draft.mainPosts.length);
-      console.log('mainPosts.length', draft.mainPosts.length < 50);
       draft.hasMorePosts = draft.mainPosts.length < 50;
       break;
     case LOAD_POSTS_FAILURE:
@@ -146,7 +144,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.addPostError = null;
       break;
     case ADD_POST_SUCCESS:
-      draft.mainPosts.unshift(dummyPost(action.data));
+      draft.mainPosts.unshift(action.data);
       draft.addPostDone = true;
       draft.addPostLoading = false;
       break;
@@ -174,8 +172,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.addCommentError = null;
       break;
     case ADD_COMMENT_SUCCESS: {
-      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
-      post.Comments.unshift(dummyComment(action.data));
+      const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+      post.Comments.unshift(action.data);
       draft.addCommentDone = true;
       draft.addCommentLoading = false;
       break;
