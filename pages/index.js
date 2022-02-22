@@ -23,16 +23,16 @@ function Home() {
   }, []);
 
   const [ref, inView] = useInView();
-  useEffect(() => {
-    if (inView && hasMorePosts && !loadPostsLoading
-      && document.documentElement.clientHeight < document.documentElement.scrollHeight) {
-      const lastId = mainPosts[mainPosts.length - 1]?.id;
-      dispatch({
-        type: LOAD_POSTS_REQUEST,
-        lastId,
-      });
-    }
-  }, [inView, hasMorePosts, loadPostsLoading, mainPosts]);
+  // useEffect(() => {
+  //   if (inView && hasMorePosts && !loadPostsLoading
+  //     && document.documentElement.clientHeight < document.documentElement.scrollHeight) {
+  //     const lastId = mainPosts[mainPosts.length - 1]?.id;
+  //     dispatch({
+  //       type: LOAD_POSTS_REQUEST,
+  //       // lastId,
+  //     });
+  //   }
+  // }, [inView, hasMorePosts, loadPostsLoading, mainPosts]);
 
   return (
     <AppLayout>
