@@ -115,25 +115,6 @@ export const addCommentRequest = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
-const dummyPost = (data) => ({
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 1,
-    nickname: '제로초',
-  },
-  Images: [],
-  Comments: [],
-});
-
-const dummyComment = (data) => ({
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 1,
-    nickname: '제로초',
-  },
-});
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
@@ -204,7 +185,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.removePostError = null;
       break;
     case REMOVE_POST_SUCCESS:
-      draft.mainPosts = state.mainPosts.filter((post) => post.id !== action.data);
+      draft.mainPosts = state.mainPosts.filter((post) => post.id !== action.data.PostId);
       draft.removePostDone = true;
       draft.removePostLoading = false;
       break;

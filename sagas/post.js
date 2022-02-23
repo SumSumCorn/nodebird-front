@@ -18,11 +18,6 @@ import {
   LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS } from '../reducer/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducer/user';
 
-function removePostAPI(data) {
-  return axios.delete('/api/post', data, {
-    withCredentials: true,
-  });
-}
 
 function unlikePostAPI(data) {
   return axios.delete(`/post/${data}/like`);
@@ -61,9 +56,7 @@ function* likePost(action) {
 }
 
 function addPostAPI(data) {
-  return axios.post('/post', { content: data }, {
-    withCredentials: true,
-  });
+  return axios.post('/post', { content: data });
 }
 
 function* addPost(action) {
@@ -104,17 +97,19 @@ function* loadPosts(action) {
   }
 }
 
+function removePostAPI(data) {
+  return axios.delete(`/post/${data}`);
+}
 function* removePost(action) {
   try {
-    // const result = yield call(addPostAPI, action.data);
-    yield delay(1000);
+    const result = yield call(removePostAPI, action.data);
     yield put({
       type: REMOVE_POST_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
     yield put({
       type: REMOVE_POST_OF_ME,
-      data: action.data,
+      data: result.data,
     });
   } catch (e) {
     yield put({
